@@ -20,7 +20,6 @@
 package com.xpn.xwiki.doc;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -28,6 +27,9 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.AutoCloseInputStream;
+
+import com.linwoodhomes.TempFile;
+import com.xpn.xwiki.web.Utils;
 
 /**
  * The content of an attachment. Objects of this class hold the actual content which will be downloaded when a user
@@ -85,10 +87,10 @@ public class XWikiAttachmentContent implements Cloneable
      */
     private void newFileItem()
     {
-        String tempFileLocation = System.getProperty("java.io.tmpdir");
         // TODO try to get a different temp file location.
+        TempFile fileComponent = Utils.getComponent(TempFile.class);
+        final DiskFileItem dfi = (DiskFileItem) fileComponent.getTempFile();
         try {
-            final DiskFileItem dfi = new DiskFileItem(null, null, false, null, 10000, new File(tempFileLocation));
             // This causes the temp file to be created.
             dfi.getOutputStream();
             // Make sure this file is marked for deletion on VM exit because DiskFileItem does not.
@@ -97,7 +99,7 @@ public class XWikiAttachmentContent implements Cloneable
         } catch (IOException e) {
             throw new RuntimeException("Failed to create new attachment temporary file."
                 + " Are you sure you have permission to write to "
-                + tempFileLocation + "?", e);
+                + dfi.getStoreLocation() + "?", e);
         }
     }
 

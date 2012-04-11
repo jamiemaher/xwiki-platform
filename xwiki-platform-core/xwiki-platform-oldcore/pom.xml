@@ -655,6 +655,11 @@
       <version>${commons.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>com.linwoodhomes</groupId>
+    	<artifactId>linwood-xwiki-component-tempfiles</artifactId>
+    	<version>1.0</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
