@@ -77,7 +77,7 @@ public class XWikiAttachmentContent implements Cloneable
      */
     public XWikiAttachmentContent()
     {
-        this.newFileItem();
+        //delay creating fileItem until it is needed.
     }
 
     /**
@@ -93,6 +93,10 @@ public class XWikiAttachmentContent implements Cloneable
         try {
             // This causes the temp file to be created.
             dfi.getOutputStream();
+            // Set the field name to give some indication what file this is for
+            if (attachment != null) {
+                dfi.setFieldName(attachment.getFilename());
+            }
             // Make sure this file is marked for deletion on VM exit because DiskFileItem does not.
             dfi.getStoreLocation().deleteOnExit();
             this.file = dfi;
@@ -142,7 +146,11 @@ public class XWikiAttachmentContent implements Cloneable
     @Deprecated
     public byte[] getContent()
     {
-        return this.file.get();
+        if (file == null) {
+            return new byte[0];
+        } else {
+            return this.file.get();
+        }
     }
 
     /**
@@ -209,8 +217,15 @@ public class XWikiAttachmentContent implements Cloneable
      */
     public InputStream getContentInputStream()
     {
-        try {
-            return new AutoCloseInputStream(this.file.getInputStream());
+        try {    
+            InputStream stream = null;
+            
+            if (this.file == null) {
+                stream = new ByteArrayInputStream(new byte[0]);
+            } else {            
+                stream = this.file.getInputStream();
+            }
+            return new AutoCloseInputStream(stream);
         } catch (IOException e) {
             throw new RuntimeException("Failed to get InputStream", e);
         }
@@ -253,6 +268,10 @@ public class XWikiAttachmentContent implements Cloneable
      */
     public int getSize()
     {
-        return (int) this.file.getSize();
+        if (this.file == null) {
+            return 0;
+        } else {
+            return (int) this.file.getSize();
+        }
     }
 }
