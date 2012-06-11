@@ -547,7 +547,7 @@ public class DomainObjectFactory
 
             UriBuilder uriBuilder = UriBuilder.fromUri(baseUri).path(pathClass);
 
-            if (useVersion) {
+            if (!useVersion) {
                 attachmentUri = uriBuilder.buildFromEncoded(eWiki, eSpaceName, eDocName, eAttachName).toString();
             } else {
                 attachmentUri =
